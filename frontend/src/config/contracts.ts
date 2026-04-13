@@ -1,11 +1,18 @@
 import { baseSepolia, base } from '@reown/appkit/networks'
 
 const ZERO = '0x0000000000000000000000000000000000000000' as `0x${string}`
+const LEGACY = import.meta.env.VITE_CLICKER_CONTRACT_ADDRESS as string | undefined
+
+function normalizeAddress(value?: string): `0x${string}` {
+  const v = value?.trim()
+  if (!v || !v.startsWith('0x') || v.length !== 42) return ZERO
+  return v as `0x${string}`
+}
 
 // Per-network contract addresses
 const contractAddresses: Record<number, `0x${string}`> = {
-  [baseSepolia.id]: (import.meta.env.VITE_CLICKER_CONTRACT_SEPOLIA || ZERO) as `0x${string}`,
-  [base.id]: (import.meta.env.VITE_CLICKER_CONTRACT_MAINNET || ZERO) as `0x${string}`,
+  [baseSepolia.id]: normalizeAddress(import.meta.env.VITE_CLICKER_CONTRACT_SEPOLIA || LEGACY),
+  [base.id]: normalizeAddress(import.meta.env.VITE_CLICKER_CONTRACT_MAINNET || LEGACY),
 }
 
 export function getClickerAddress(chainId?: number): `0x${string}` {

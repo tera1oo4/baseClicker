@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useClicker } from '@/composables/useClicker'
 
 const { localClicks, sync, isSyncing, isConnected, contractAvailable } = useClicker()
+
+const disabledReason = computed(() => {
+  if (!isConnected.value) return 'Подключи кошелек'
+  if (!contractAvailable.value) return 'Контракт не настроен для текущей сети'
+  if (localClicks.value === 0) return 'Сделай клики перед синком'
+  return ''
+})
 </script>
 
 <template>
@@ -17,6 +25,7 @@ const { localClicks, sync, isSyncing, isConnected, contractAvailable } = useClic
       <span v-if="localClicks > 0" class="badge">{{ localClicks }}</span>
     </template>
   </button>
+  <p v-if="disabledReason" class="hint">{{ disabledReason }}</p>
 </template>
 
 <style scoped>
@@ -75,5 +84,12 @@ const { localClicks, sync, isSyncing, isConnected, contractAvailable } = useClic
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+.hint {
+  margin-top: 0.5rem;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.8rem;
 }
 </style>
