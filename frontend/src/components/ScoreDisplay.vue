@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAccount, useBalance, useChainId } from '@wagmi/vue'
+import { formatUnits } from 'viem'
 import { useClicker } from '@/composables/useClicker'
 
 const { totalScore, clicksPerSecond, localClicks } = useClicker()
@@ -12,6 +13,12 @@ const chainLabel = computed(() => {
   if (chainId.value === 84532) return 'Base Sepolia'
   if (chainId.value === 8453) return 'Base Mainnet'
   return 'Unknown network'
+})
+
+const balanceLabel = computed(() => {
+  const b = balance.value
+  if (!b) return '—'
+  return `${Number(formatUnits(b.value, b.decimals)).toFixed(4)} ${b.symbol}`
 })
 
 function formatNumber(n: number): string {
@@ -42,7 +49,7 @@ function formatNumber(n: number): string {
       </div>
       <div v-if="isConnected" class="stat">
         <span class="stat-label">💰 Balance</span>
-        <span class="stat-value">{{ balance ? `${Number(balance.formatted).toFixed(4)} ${balance.symbol}` : '—' }}</span>
+        <span class="stat-value">{{ balanceLabel }}</span>
       </div>
     </div>
   </div>
